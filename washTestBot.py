@@ -10,6 +10,7 @@ nowTime = datetime.datetime.now().time()
 
 actionWord = ""
 actionWord2 = ""
+alreadyOpened = False
 
 #t1 is the initial time
 #t2 is the current time
@@ -28,11 +29,42 @@ def sendReminder(mArray):
                 telegram_bot.sendMessage(machineUser, "Your laundry has been in the machine for more than 2hrs! It may have already been completed")
                 i[2] = True
 
+#convert String to Boolean
+def stringToBool(s):
+    if s == "True":
+        return True
+    else:
+        return False
+
 def action(msg):
     global actionWord2
     global actionWord
+    global alreadyOpened
     chat_id = msg['chat']['id']
     command = msg['text']
+
+    # if not alreadyOpened:
+    #     f = open("status.txt","r")
+    #     if f.mode == 'r':
+
+    if not alreadyOpened:
+        rf = open("status.txt", "r")
+        if rf.mode == 'r':
+            contents =rf.read()
+            info = contents.split("|")
+            print(info)
+            for i in range(0,5):
+                du = info[i*3]
+                if du == "0":
+                    machineStatus[i][0] = 0
+                else:
+                    machineStatus[i][0] = int(info[i*3])
+                dt = info[i*3 + 1]
+                if dt != "0":
+                    machineStatus[i][1] = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S.%f")
+                machineStatus[i][2] = stringToBool(info[i*3 + 2])
+            print(machineStatus)
+        alreadyOpened = True
 
     print ('Recieved: ', command)
     print (nowTime)
@@ -117,6 +149,9 @@ def action(msg):
                     if(machineStatus[machineNumber - 1][0] == chat_id):
                         message = "Thank you for colleting your clothes! Hope you have a great day"
                         machineStatus[machineNumber - 1][0] = 0
+                        machineStatus[machineNumber - 1][1] = 0
+                        machineStatus[machineNumber - 1][2] = False
+
                     else:
                         message = "These are not your clothes!"
 
@@ -184,6 +219,15 @@ def action(msg):
         keyboard = ReplyKeyboardMarkup(keyboard=[['/start', '/done'], ['/use', '/status'], ["/notify", "/reset"]])
         message = "Back to homepage!"
         telegram_bot.sendMessage(chat_id, message, reply_markup=keyboard)
+
+    f= open("status.txt","w+")
+    for i in range(0,5):
+        chat_ID = machineStatus[i][0]
+        startTime = machineStatus[i][1]
+        hasNotified = machineStatus[i][2]
+        help = str(chat_ID) + "|" + str(startTime) + "|" + str(hasNotified) + "|"
+        f.write(help)
+    f.close()
 
 
 machineStatus = [[0,0,False],[0,0, False],[0,0, False],[0,0, False],[0,0, False]]
