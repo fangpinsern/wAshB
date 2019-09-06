@@ -11,7 +11,7 @@ class Storage:
         f= open(self.filePath, "w+")
         for i in machineManager.getMachList():
             help = i.makeForStorage()
-            print(help)
+            # print(help)
             f.write(help)
         f.close()
 
@@ -21,8 +21,8 @@ class Storage:
         if rf.mode == 'r':
             contents =rf.read()
             info = contents.split("|")
-            print(info)
-            print(int(len(info)/4))
+            # print(info)
+            # print(int(len(info)/4))
             for i in range(int(len(info)/4)):
                 user = int(info[i*4])
                 time = info[i*4 + 1]
@@ -45,4 +45,4 @@ class Storage:
                 # if dt != "0":
                 #     machineStatus[i][1] = datetime.datetime.strptime(dt, "%Y-%m-%d %H:%M:%S.%f")
                 # machineStatus[i][2] = stringToBool(info[i*3 + 2])
-            print(machineManager.getMachList())
+            # print(machineManager.getMachList())

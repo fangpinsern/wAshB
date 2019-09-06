@@ -182,6 +182,8 @@ schedule.every(10).seconds.do(sendReminder, manager.getMachList())
 
 testBotToken = ''
 mainBotToken = ''
+testBotToken = '930788863:AAGbxJ4CwV-z8hCjky0lqE13Cgda-3S59qc'
+mainBotToken = '989321353:AAHpC8w6BAcfj6NM9Nz5hQuQF7KUl_Oj8-0'
 mainBot = telepot.Bot(mainBotToken)
 testBot = telepot.Bot(testBotToken)
 telegram_bot = testBot
