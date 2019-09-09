@@ -64,19 +64,22 @@ def action(msg):
     print (nowTime)
 
     keyboard = ReplyKeyboardMarkup(keyboard=[['/start', '/done'], ['/use', '/status'], ["/notify", "/reset"]])
-    numberkeyboard = ReplyKeyboardMarkup(keyboard=[['1', '2', '3'], ['4', '5', '6'], ['7', '/reset']])
+    numberkeyboard = ReplyKeyboardMarkup(keyboard=[['1', '2', '3'], ['4', '5', '6'], ['7', '8'], ['/reset']])
     if command != "/reset":
         if actionWord == "" and actionWord2 == "":
             
             if "/start" in command:
-                message = "Hi, how may i help you today?\n"
+                message = "Hi, I am wAshB, how may I help you today?\n\n"
+                message = message + "Here are a list of commands I have!\n"
                 message = message + "/start - Starts the bot and get help\n"
-                message = message + "/done - When you are done using the machine\n"
-                message = message + "/use - When you want to use a washing machine\n"
-                message = message + "/notify - Notify the person that his/her laundry is ready for collection\n"
-                message = message + "/reset - go back to the main page\n"
-                message = message + "/status - Check the status of the laundrette\n\n"
-                message = message + "Your small gesture would make it more convienient for everyone in the block."
+                message = message + "/done - when done with washing machine\n"
+                message = message + "/use - when using washing machine\n"
+                message = message + "/notify - Notify the machine user\n"
+                message = message + "/reset - if you want to reset\n"
+                message = message + "/status - Check which washing machines are available\n\n"
+                message = message + "Look at my dp to know which number is which machine!\n"
+                message = message + "Your small gesture would make it more convenient for everyone in the block.\n\n"
+                message = message + "Happy washing!"
                 
 
             if "/done" in command:
@@ -138,7 +141,7 @@ def action(msg):
                     if(machUser == chat_id):
                         message = "This is your own clothes"
                     else:
-                        telegram_bot.sendMessage(machUser, "Your clothes are done. Do collect them soon as some one else may need to use it")
+                        telegram_bot.sendMessage(machUser, "Your clothes are done. Do collect them in the next 5 minutes as some one else may need to use it")
                         message =  "We have notified the user, please give the user 5mins to arrive."
 
             actionWord = ""
@@ -182,11 +185,11 @@ schedule.every(10).seconds.do(sendReminder, manager.getMachList())
 
 testBotToken = ''
 mainBotToken = ''
-testBotToken = '930788863:AAGbxJ4CwV-z8hCjky0lqE13Cgda-3S59qc'
-mainBotToken = '989321353:AAHpC8w6BAcfj6NM9Nz5hQuQF7KUl_Oj8-0'
+
 mainBot = telepot.Bot(mainBotToken)
 testBot = telepot.Bot(testBotToken)
-telegram_bot = testBot
+wAshBbot = telepot.Bot(wAshBToken)
+telegram_bot = wAshBbot
 print(telegram_bot.getMe())
 
 MessageLoop(telegram_bot, action).run_as_thread()
