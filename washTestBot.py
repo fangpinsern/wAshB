@@ -15,7 +15,9 @@ actionWord2 = ""
 useCheckNumber = ""
 
 manager = MachineManager()
+userManager = MachineManager()
 store = Storage("status.txt")
+storeUser = Storage("user.txt")
 
 alreadyOpened = False
 lastUpdated = now 
@@ -51,14 +53,24 @@ def action(msg):
     global alreadyOpened
     global lastUpdated
     global manager
+    global userManager
     global store
+    global storeUser
 
     chat_id = msg['chat']['id']
+    username = msg['chat']['username']
     command = msg['text']
     
     if not alreadyOpened:
         store.readFromStorage(manager)
+        storeUser.readFromStorage(userManager)
         alreadyOpened = True
+
+    if username in userManager.getMachList():
+        print("I am in")
+    else:
+        userManager.addMachine(username)
+
 
     print ('Recieved: ', command)
     print (nowTime)
@@ -80,7 +92,7 @@ def action(msg):
                 message = message + "Look at my dp to know which number is which machine!\n"
                 message = message + "Your small gesture would make it more convenient for everyone in the block.\n\n"
                 message = message + "Happy washing!"
-                
+                print(username)
 
             if "/done" in command:
                 message = "Which machine is done?"
@@ -177,6 +189,12 @@ def action(msg):
 
     # print(manager.getMachList())
     store.saveToStorage(manager)
+    
+    f = open("user.txt", "w+")
+    for i in userManager.getMachList():
+        help = i
+        f.write(help)
+    f.close()
 
 
 # machineStatus = [[0,0,False],[0,0, False],[0,0, False],[0,0, False],[0,0, False],[0,0,False],[0,0,False]]
@@ -186,10 +204,11 @@ schedule.every(10).seconds.do(sendReminder, manager.getMachList())
 testBotToken = ''
 mainBotToken = ''
 
+
 mainBot = telepot.Bot(mainBotToken)
 testBot = telepot.Bot(testBotToken)
 wAshBbot = telepot.Bot(wAshBToken)
-telegram_bot = wAshBbot
+telegram_bot = mainBot
 print(telegram_bot.getMe())
 
 MessageLoop(telegram_bot, action).run_as_thread()
