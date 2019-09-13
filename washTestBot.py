@@ -5,6 +5,8 @@ from telepot.loop import MessageLoop
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
 from Storage import Storage
 from MachineManager import MachineManager
+from UserManager import UserManager
+from User import User
 
 led = 26
 now = datetime.datetime.now()
@@ -15,7 +17,7 @@ actionWord2 = ""
 useCheckNumber = ""
 
 manager = MachineManager()
-userManager = MachineManager()
+userManager = UserManager()
 store = Storage("status.txt")
 storeUser = Storage("user.txt")
 
@@ -61,16 +63,18 @@ def action(msg):
     username = msg['chat']['username']
     command = msg['text']
     
+    #check if the file has already been opened
     if not alreadyOpened:
-        store.readFromStorage(manager)
-        storeUser.readFromStorage(userManager)
+        store.readMachineFromStorage(manager)
+        storeUser.readUserFromStorage(userManager)
         alreadyOpened = True
 
-    if username in userManager.getMachList():
+    #check if the user is already in the list
+    if userManager.userInList(username):
         print("I am in")
     else:
-        userManager.addMachine(username)
-
+        user = User(username, chat_id)
+        userManager.addEntity(user)
 
     print ('Recieved: ', command)
     print (nowTime)
@@ -115,7 +119,7 @@ def action(msg):
         elif actionWord and not actionWord2:
             if actionWord == "done":
                 machineNumber = int(command)
-                machInFocus = manager.getMachine(machineNumber)
+                machInFocus = manager.getEntity(machineNumber)
                 if not machInFocus.isInUse():
                     message = "Machine is currently not in use"
                 else:
@@ -129,7 +133,7 @@ def action(msg):
 
             elif actionWord == "use":
                 machineNumber = int(command)
-                machInFocus = manager.getMachine(machineNumber)
+                machInFocus = manager.getEntity(machineNumber)
                 if machInFocus.isInUse() and machInFocus.getUser() == chat_id:
                     message = "Your own clothes are washing! Please remember to /done first before reusing so the timer will reset :)"
                 elif machInFocus.isInUse():
@@ -145,7 +149,7 @@ def action(msg):
 
             elif actionWord == "notify":
                 machineNumber = int(command)
-                machInFocus = manager.getMachine(machineNumber)
+                machInFocus = manager.getEntity(machineNumber)
                 if not machInFocus.isInUse():
                     message = "Machine is currently not in use"
                 else:
@@ -163,7 +167,7 @@ def action(msg):
             if actionWord2 == "useCheck":
                 if command == "yes":
                     machineNumber = useCheckNumber
-                    machInFocus = manager.getMachine(machineNumber)
+                    machInFocus = manager.getList(machineNumber)
                     telegram_bot.sendMessage(machInFocus.getUser(), "It seems that you are done with the machine.\n Please remember to let me know next time!", reply_markup=keyboard)
 
                     lastUpdated = datetime.datetime.now()
@@ -189,20 +193,17 @@ def action(msg):
 
     # print(manager.getMachList())
     store.saveToStorage(manager)
-    
-    f = open("user.txt", "w+")
-    for i in userManager.getMachList():
-        help = i
-        f.write(help)
-    f.close()
+    storeUser.saveToStorage(userManager)
 
 
 # machineStatus = [[0,0,False],[0,0, False],[0,0, False],[0,0, False],[0,0, False],[0,0,False],[0,0,False]]
 # machineStatus = []
-schedule.every(10).seconds.do(sendReminder, manager.getMachList())
+schedule.every(10).seconds.do(sendReminder, manager.getList())
 
 testBotToken = ''
 mainBotToken = ''
+
+
 
 
 mainBot = telepot.Bot(mainBotToken)
