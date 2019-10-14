@@ -26,7 +26,7 @@ class Machine:
         return self.time
 
     def getNotified(self):
-        return self.alrNotified
+        return self.hasNotified
 
     def done(self):
         self.user = 0

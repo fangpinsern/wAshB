@@ -37,7 +37,7 @@ def sendReminder(mArray):
     for i in mArray:
         machineUser = i.getUser()
         if machineUser != 0 and not i.getNotified():
-            if diffInTime(i[1], datetime.datetime.now())[0] > 120:
+            if diffInTime(i.getTime(), datetime.datetime.now())[0] > 120:
                 telegram_bot.sendMessage(machineUser, "Your laundry has been in the machine for more than 2hrs! It may have already been completed")
                 i.alrNotified()
 
@@ -202,8 +202,6 @@ schedule.every(10).seconds.do(sendReminder, manager.getList())
 
 testBotToken = ''
 mainBotToken = ''
-
-
 
 
 mainBot = telepot.Bot(mainBotToken)
